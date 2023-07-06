@@ -1,0 +1,1 @@
+alter table customer add constraint customer_pk primary key (id);
