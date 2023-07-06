@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>ua.aleh1s</groupId>
-    <artifactId>aleh1s-api</artifactId>
+    <artifactId>user-manager-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <organization>
