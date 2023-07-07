@@ -1,0 +1,38 @@
+name: CI - Build Backend
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - backend/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 123
+          POSTGRES_DB: user_manager_api
+          options: >-
+            --health-cmd pg_isready 
+            --health-interval 10s 
+            --health-timeout 5s 
+            --health-retries 5
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - name: Build and run tests with Maven
+        run: mvn -ntp -B verify
