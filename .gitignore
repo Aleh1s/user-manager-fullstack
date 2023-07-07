@@ -2,4 +2,3 @@
 */target
 */node_modules
 */Dockerrun.aws.json
-backend/docker-compose.yml
