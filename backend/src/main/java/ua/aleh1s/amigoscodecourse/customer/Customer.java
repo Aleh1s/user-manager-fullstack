@@ -3,13 +3,13 @@ package ua.aleh1s.amigoscodecourse.customer;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
+@Entity()
+@Getter()
+@Setter()
 @Table(name = "customer")
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
+@AllArgsConstructor()
+@NoArgsConstructor()
+@EqualsAndHashCode()
 public class Customer {
 
     @Id()

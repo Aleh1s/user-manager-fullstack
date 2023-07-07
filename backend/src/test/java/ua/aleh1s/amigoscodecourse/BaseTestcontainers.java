@@ -12,7 +12,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
 
-@Testcontainers
+@Testcontainers()
 public abstract class BaseTestcontainers {
 
     protected static final Faker FAKER = new Faker();

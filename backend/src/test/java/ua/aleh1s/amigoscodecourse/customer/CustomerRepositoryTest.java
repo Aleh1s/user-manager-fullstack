@@ -9,7 +9,7 @@ import ua.aleh1s.amigoscodecourse.BaseTestcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@DataJpaTest()
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CustomerRepositoryTest extends BaseTestcontainers {
 

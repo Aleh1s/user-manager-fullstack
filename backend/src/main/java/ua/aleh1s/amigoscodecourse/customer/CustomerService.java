@@ -8,8 +8,8 @@ import ua.aleh1s.amigoscodecourse.exception.ResourceNotFoundException;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
+@Service()
+@RequiredArgsConstructor()
 public class CustomerService {
 
     private final CustomerRepository customerRepository;

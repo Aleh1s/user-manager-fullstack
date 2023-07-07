@@ -15,7 +15,7 @@ public class CustomerController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void createCustomer(@RequestBody CustomerCreateRequest request) {
+    public void createCustomer(@RequestBody() CustomerCreateRequest request) {
         customerService.saveCustomer(request);
     }
 
@@ -39,7 +39,7 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCustomerById(@PathVariable("id") Integer id, @RequestBody CustomerUpdateRequest request) {
+    public void updateCustomerById(@PathVariable("id") Integer id, @RequestBody() CustomerUpdateRequest request) {
         customerService.updateCustomerById(id, request);
     }
 }
