@@ -32,7 +32,8 @@ class CustomerServiceTest {
         CustomerCreateRequest request = new CustomerCreateRequest(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20)
+                FAKER.number().numberBetween(10, 20),
+                Gender.MALE
         );
         when(customerRepository.existsCustomerByEmail(request.email())).thenReturn(false);
         // when
@@ -53,7 +54,8 @@ class CustomerServiceTest {
         CustomerCreateRequest request = new CustomerCreateRequest(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20)
+                FAKER.number().numberBetween(10, 20),
+                Gender.MALE
         );
         when(customerRepository.existsCustomerByEmail(request.email())).thenReturn(true);
         // when
@@ -101,7 +103,8 @@ class CustomerServiceTest {
                 id,
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20)
+                FAKER.number().numberBetween(10, 20),
+                Gender.MALE
         );
         when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
         // when

@@ -25,9 +25,14 @@ public class Customer {
     @Column(name = "age")
     private int age;
 
-    public Customer(String name, String email, int age) {
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    public Customer(String name, String email, int age, Gender gender) {
         this.name = name;
         this.email = email;
         this.age = age;
+        this.gender = gender;
     }
 }

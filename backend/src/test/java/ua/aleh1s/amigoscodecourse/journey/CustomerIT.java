@@ -8,10 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import ua.aleh1s.amigoscodecourse.customer.Customer;
-import ua.aleh1s.amigoscodecourse.customer.CustomerCreateRequest;
-import ua.aleh1s.amigoscodecourse.customer.CustomerRepository;
-import ua.aleh1s.amigoscodecourse.customer.CustomerUpdateRequest;
+import ua.aleh1s.amigoscodecourse.customer.*;
 
 import java.util.List;
 
@@ -56,7 +53,7 @@ public class CustomerIT {
                 .getResponseBody();
 
         Customer expectedCustomer = new Customer(
-                request.name(), request.email(), request.age()
+                request.name(), request.email(), request.age(), request.gender()
         );
 
         assertThat(allCustomers)
@@ -167,7 +164,8 @@ public class CustomerIT {
                 .getResponseBody();
 
         Customer expectedCustomer = new Customer(
-                id, customerUpdateRequest.name(), customerUpdateRequest.email(), customerUpdateRequest.age()
+                id, customerUpdateRequest.name(), customerUpdateRequest.email(),
+                customerUpdateRequest.age(), customerUpdateRequest.gender()
         );
 
         assertThat(updatedCustomer).isEqualTo(expectedCustomer);
@@ -177,7 +175,8 @@ public class CustomerIT {
         return new CustomerCreateRequest(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20)
+                FAKER.number().numberBetween(10, 20),
+                Gender.MALE
         );
     }
 
@@ -185,7 +184,8 @@ public class CustomerIT {
         return new CustomerUpdateRequest(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20)
+                FAKER.number().numberBetween(10, 20),
+                Gender.MALE
         );
     }
 }

@@ -3,6 +3,7 @@
 */target
 */node_modules
 */Dockerrun.aws.json
+*/user-manager-api.iml
 .github/workflows/backend-cd.yml
 ./frontend
 
@@ -28,3 +29,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+

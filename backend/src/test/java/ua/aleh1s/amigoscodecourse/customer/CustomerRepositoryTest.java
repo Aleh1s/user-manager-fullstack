@@ -27,7 +27,8 @@ class CustomerRepositoryTest extends BaseTestcontainers {
         Customer customer = new Customer(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                20
+                20,
+                Gender.MALE
         );
         underTest.save(customer);
         Integer id = findCustomerIdByEmail(customer.getEmail());
@@ -43,7 +44,8 @@ class CustomerRepositoryTest extends BaseTestcontainers {
         Customer customer = new Customer(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                20
+                20,
+                Gender.MALE
         );
         underTest.save(customer);
         // when

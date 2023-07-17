@@ -25,7 +25,8 @@ public class CustomerService {
         Customer customer = new Customer(
                 request.name(),
                 request.email(),
-                request.age()
+                request.age(),
+                request.gender()
         );
         customerRepository.save(customer);
     }
