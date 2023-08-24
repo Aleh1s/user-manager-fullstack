@@ -7,10 +7,12 @@ import {
     Flex,
     Text,
     Stack,
-    useColorModeValue, Tag,
+    useColorModeValue, Tag
 } from '@chakra-ui/react';
+import DeleteCustomerButtonWithAlert from "./DeteleCustomerButtonWithAlert.jsx";
+import EditCustomerDrawer from "./EditCustomerDrawer.jsx";
 
-export default function CardWithImage({id, name, email, age, gender}) {
+export default function CardWithImage({id, name, email, age, gender, fetchCustomers}) {
     return (
         <Center py={6}>
             <Box
@@ -51,6 +53,10 @@ export default function CardWithImage({id, name, email, age, gender}) {
                         <Text color={'gray.500'}>Age {age} | {gender.substring(0, 1) + gender.substring(1, gender.length).toLowerCase()}</Text>
                     </Stack>
                 </Box>
+                <Flex justify={'center'} mb={3} gap={2} mx={4}>
+                    <DeleteCustomerButtonWithAlert id={id} fetchCustomers={fetchCustomers}/>
+                    <EditCustomerDrawer id={id} fetchCustomers={fetchCustomers}/>
+                </Flex>
             </Box>
         </Center>
     );
