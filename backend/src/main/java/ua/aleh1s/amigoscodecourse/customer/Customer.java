@@ -2,15 +2,20 @@ package ua.aleh1s.amigoscodecourse.customer;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity()
 @Getter()
 @Setter()
 @Table(name = "customer")
-@AllArgsConstructor()
 @NoArgsConstructor()
 @EqualsAndHashCode()
-public class Customer {
+public class Customer implements UserDetails {
 
     @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +34,67 @@ public class Customer {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    public Customer(String name, String email, int age, Gender gender) {
+    @Column(name = "password")
+    private String password;
+
+    public Customer(Integer id,
+                    String name,
+                    String email,
+                    int age,
+                    Gender gender,
+                    String password) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.age = age;
         this.gender = gender;
+        this.password = password;
+    }
+
+    public Customer(String name,
+                    String email,
+                    int age,
+                    Gender gender,
+                    String password) {
+        this.name = name;
+        this.email = email;
+        this.age = age;
+        this.gender = gender;
+        this.password = password;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

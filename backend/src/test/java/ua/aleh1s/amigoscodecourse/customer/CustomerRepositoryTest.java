@@ -9,7 +9,7 @@ import ua.aleh1s.amigoscodecourse.BaseTestcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest()
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CustomerRepositoryTest extends BaseTestcontainers {
 
@@ -27,8 +27,9 @@ class CustomerRepositoryTest extends BaseTestcontainers {
         Customer customer = new Customer(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                20,
-                Gender.MALE
+                FAKER.number().numberBetween(18, 100),
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE,
+                FAKER.internet().password()
         );
         underTest.save(customer);
         Integer id = findCustomerIdByEmail(customer.getEmail());
@@ -44,8 +45,9 @@ class CustomerRepositoryTest extends BaseTestcontainers {
         Customer customer = new Customer(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                20,
-                Gender.MALE
+                FAKER.number().numberBetween(18, 100),
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE,
+                FAKER.internet().password()
         );
         underTest.save(customer);
         // when

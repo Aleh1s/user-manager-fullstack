@@ -14,12 +14,14 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class CustomerIT {
 
     private static final Faker FAKER = new Faker();
     private static final String CUSTOMER_URI = "/api/v1/customers";
+    private static final String JWT_TEMPLATE = "Bearer %s";
 
     @Autowired
     private WebTestClient webTestClient;
@@ -33,113 +35,152 @@ public class CustomerIT {
 
     @Test
     void canRegisterCustomer() {
-        CustomerCreateRequest request = newCustomerCreateRequest();
+        CustomerRegistrationRequest request = newCustomerCreateRequest();
 
-        webTestClient.post()
+        String jwt = webTestClient.post()
                 .uri(CUSTOMER_URI)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
-                .expectStatus().isEqualTo(HttpStatus.CREATED);
+                .expectStatus()
+                .isEqualTo(HttpStatus.CREATED)
+                .returnResult(Void.class)
+                .getResponseHeaders()
+                .getFirst(AUTHORIZATION);
 
-        List<Customer> allCustomers = webTestClient.get()
+        String jwtToken = JWT_TEMPLATE.formatted(jwt);
+        List<CustomerDto> allCustomers = webTestClient.get()
                 .uri(CUSTOMER_URI)
                 .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, jwtToken)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Customer.class)
+                .expectBodyList(CustomerDto.class)
                 .returnResult()
                 .getResponseBody();
 
-        Customer expectedCustomer = new Customer(
-                request.name(), request.email(), request.age(), request.gender()
-        );
-
-        assertThat(allCustomers)
-                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
-                .contains(expectedCustomer);
-
         int id = allCustomers.stream()
-                .filter(customer -> customer.getEmail().equals(expectedCustomer.getEmail()))
-                .mapToInt(Customer::getId)
+                .filter(customer -> customer.email().equals(request.email()))
+                .mapToInt(CustomerDto::id)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Expected customer does not exist!"));
 
-        expectedCustomer.setId(id);
+        CustomerDto expectedCustomer = new CustomerDto(
+                id,
+                request.name(),
+                request.email(),
+                request.age(),
+                request.gender(),
+                List.of("ROLE_USER"),
+                request.email()
+        );
+
+        assertThat(allCustomers).contains(expectedCustomer);
 
         webTestClient.get()
                 .uri(CUSTOMER_URI + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, jwtToken)
                 .exchange()
-                .expectBody(Customer.class)
+                .expectBody(CustomerDto.class)
                 .isEqualTo(expectedCustomer);
     }
 
     @Test
     void canDeleteCustomerById() {
-        CustomerCreateRequest request = newCustomerCreateRequest();
+        CustomerRegistrationRequest requestToGetJwt = newCustomerCreateRequest();
+        CustomerRegistrationRequest requestToRegisterCustomer = newCustomerCreateRequest();
+
+        String jwt = webTestClient.post()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestToGetJwt)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CREATED)
+                .returnResult(Void.class)
+                .getResponseHeaders()
+                .getFirst(AUTHORIZATION);
 
         webTestClient.post()
                 .uri(CUSTOMER_URI)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
+                .bodyValue(requestToRegisterCustomer)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CREATED);
 
-        List<Customer> allCustomers = webTestClient.get()
+        String jwtToken = JWT_TEMPLATE.formatted(jwt);
+        List<CustomerDto> allCustomers = webTestClient.get()
                 .uri(CUSTOMER_URI)
                 .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, jwtToken)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Customer.class)
+                .expectBodyList(CustomerDto.class)
                 .returnResult()
                 .getResponseBody();
 
         int id = allCustomers.stream()
-                .filter(customer -> customer.getEmail().equals(request.email()))
-                .mapToInt(Customer::getId)
+                .filter(customer -> customer.email().equals(requestToRegisterCustomer.email()))
+                .mapToInt(CustomerDto::id)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Expected customer does not exist!"));
 
         webTestClient.delete()
                 .uri(CUSTOMER_URI + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, jwtToken)
                 .exchange()
                 .expectStatus().isNoContent();
 
         webTestClient.get()
                 .uri(CUSTOMER_URI + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, jwtToken)
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
     @Test
     void canUpdateCustomer() {
-        CustomerCreateRequest customerCreateRequest = newCustomerCreateRequest();
+        CustomerRegistrationRequest requestToGetJwt = newCustomerCreateRequest();
+        CustomerRegistrationRequest requestToRegisterCustomer = newCustomerCreateRequest();
+
+        String jwt = webTestClient.post()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestToGetJwt)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CREATED)
+                .returnResult(Void.class)
+                .getResponseHeaders()
+                .getFirst(AUTHORIZATION);
 
         webTestClient.post()
                 .uri(CUSTOMER_URI)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(customerCreateRequest)
+                .bodyValue(requestToRegisterCustomer)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CREATED);
 
-        List<Customer> allCustomers = webTestClient.get()
+        String jwtToken = JWT_TEMPLATE.formatted(jwt);
+        List<CustomerDto> allCustomers = webTestClient.get()
                 .uri(CUSTOMER_URI)
                 .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, jwtToken)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Customer.class)
+                .expectBodyList(CustomerDto.class)
                 .returnResult()
                 .getResponseBody();
 
         int id = allCustomers.stream()
-                .filter(customer -> customer.getEmail().equals(customerCreateRequest.email()))
-                .mapToInt(Customer::getId)
+                .filter(customer -> customer.email().equals(requestToRegisterCustomer.email()))
+                .mapToInt(CustomerDto::id)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Expected customer does not exist!"));
 
@@ -149,34 +190,42 @@ public class CustomerIT {
                 .uri(CUSTOMER_URI + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, jwtToken)
                 .bodyValue(customerUpdateRequest)
                 .exchange()
                 .expectStatus().isNoContent();
 
-        Customer updatedCustomer = webTestClient.get()
+        CustomerDto updatedCustomer = webTestClient.get()
                 .uri(CUSTOMER_URI + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, jwtToken)
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectBody(Customer.class)
+                .expectBody(CustomerDto.class)
                 .returnResult()
                 .getResponseBody();
 
-        Customer expectedCustomer = new Customer(
-                id, customerUpdateRequest.name(), customerUpdateRequest.email(),
-                customerUpdateRequest.age(), customerUpdateRequest.gender()
+        CustomerDto expectedCustomer = new CustomerDto(
+                id,
+                customerUpdateRequest.name(),
+                customerUpdateRequest.email(),
+                customerUpdateRequest.age(),
+                customerUpdateRequest.gender(),
+                List.of("ROLE_USER"),
+                customerUpdateRequest.email()
         );
 
         assertThat(updatedCustomer).isEqualTo(expectedCustomer);
     }
 
-    private static CustomerCreateRequest newCustomerCreateRequest() {
-        return new CustomerCreateRequest(
+    private static CustomerRegistrationRequest newCustomerCreateRequest() {
+        return new CustomerRegistrationRequest(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20),
-                Gender.MALE
+                FAKER.internet().password(),
+                FAKER.number().numberBetween(18, 100),
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE
         );
     }
 
@@ -184,8 +233,8 @@ public class CustomerIT {
         return new CustomerUpdateRequest(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20),
-                Gender.MALE
+                FAKER.number().numberBetween(18, 100),
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE
         );
     }
 }

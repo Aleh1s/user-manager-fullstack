@@ -7,10 +7,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import ua.aleh1s.amigoscodecourse.exception.DuplicateResourceException;
 import ua.aleh1s.amigoscodecourse.exception.ResourceNotFoundException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,17 +27,22 @@ class CustomerServiceTest {
     private CustomerService underTest;
     @Mock
     private CustomerRepository customerRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Test
     void saveCustomer() {
         // given
-        CustomerCreateRequest request = new CustomerCreateRequest(
+        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20),
-                Gender.MALE
+                FAKER.internet().password(),
+                FAKER.number().numberBetween(18, 100),
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE
         );
+        String hashedPassword = UUID.randomUUID().toString();
         when(customerRepository.existsCustomerByEmail(request.email())).thenReturn(false);
+        when(passwordEncoder.encode(request.password())).thenReturn(hashedPassword);
         // when
         underTest.saveCustomer(request);
         // then
@@ -46,16 +53,19 @@ class CustomerServiceTest {
         assertThat(actual.getName()).isEqualTo(request.name());
         assertThat(actual.getEmail()).isEqualTo(request.email());
         assertThat(actual.getAge()).isEqualTo(request.age());
+        assertThat(actual.getGender()).isEqualTo(request.gender());
+        assertThat(actual.getPassword()).isEqualTo(hashedPassword);
     }
 
     @Test
     void saveCustomerThrowException() {
         // given
-        CustomerCreateRequest request = new CustomerCreateRequest(
+        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20),
-                Gender.MALE
+                FAKER.internet().password(),
+                FAKER.number().numberBetween(18, 100),
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE
         );
         when(customerRepository.existsCustomerByEmail(request.email())).thenReturn(true);
         // when
@@ -76,16 +86,6 @@ class CustomerServiceTest {
     }
 
     @Test
-    void existsCustomerById() {
-        // given
-        int id = 1;
-        // when
-        underTest.existsCustomerById(id);
-        // then
-        verify(customerRepository).existsCustomerById(id);
-    }
-
-    @Test
     void existsCustomerByEmail() {
         // given
         String email = FAKER.internet().emailAddress();
@@ -103,8 +103,9 @@ class CustomerServiceTest {
                 id,
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(10, 20),
-                Gender.MALE
+                FAKER.number().numberBetween(18, 100),
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE,
+                FAKER.internet().password()
         );
         when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
         // when

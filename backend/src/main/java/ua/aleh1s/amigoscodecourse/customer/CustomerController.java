@@ -1,8 +1,11 @@
 package ua.aleh1s.amigoscodecourse.customer;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ua.aleh1s.amigoscodecourse.jwt.JwtUtil;
 
 import java.util.List;
 
@@ -12,23 +15,31 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final JwtUtil jwtUtil;
+    private final CustomerDtoMapper customerDtoMapper;
 
     @PostMapping()
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createCustomer(@RequestBody() CustomerCreateRequest request) {
+    public ResponseEntity<?> registerCustomer(@RequestBody CustomerRegistrationRequest request) {
         customerService.saveCustomer(request);
+        String jwt = jwtUtil.issueToken(request.email(), "ROLE_USER");
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.AUTHORIZATION, jwt)
+                .build();
     }
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<Customer> getAllCustomers() {
-        return customerService.getAllCustomers();
+    public List<CustomerDto> getAllCustomers() {
+        return customerService.getAllCustomers().stream()
+                .map(customerDtoMapper)
+                .toList();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Customer getCustomerById(@PathVariable("id") Integer id) {
-        return customerService.getCustomerById(id);
+    public CustomerDto getCustomerById(@PathVariable("id") Integer id) {
+        Customer customerById = customerService.getCustomerById(id);
+        return customerDtoMapper.apply(customerById);
     }
 
     @DeleteMapping("/{id}")
@@ -39,7 +50,7 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCustomerById(@PathVariable("id") Integer id, @RequestBody() CustomerUpdateRequest request) {
+    public void updateCustomerById(@PathVariable("id") Integer id, @RequestBody CustomerUpdateRequest request) {
         customerService.updateCustomerById(id, request);
     }
 }

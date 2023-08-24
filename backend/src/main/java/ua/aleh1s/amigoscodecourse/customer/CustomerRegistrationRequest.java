@@ -1,9 +1,10 @@
 package ua.aleh1s.amigoscodecourse.customer;
 
-public record CustomerCreateRequest(
+public record CustomerRegistrationRequest(
         String name,
         String email,
-        int age,
+        String password,
+        Integer age,
         Gender gender
 ) {
 }
