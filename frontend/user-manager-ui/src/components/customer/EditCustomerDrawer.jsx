@@ -10,8 +10,8 @@ import {
     useDisclosure
 } from "@chakra-ui/react";
 import {useState} from "react";
-import {getCustomerById} from "../services/clients.js";
-import {errorNotification} from "../services/notification.js";
+import {getCustomerById} from "../../services/clients.js";
+import {errorNotification} from "../../services/notification.js";
 import EditCustomerForm from "./EditCustomerForm.jsx";
 
 const CloseIcon = () => "x"

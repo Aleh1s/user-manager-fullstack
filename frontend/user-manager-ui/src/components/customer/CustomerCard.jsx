@@ -12,7 +12,7 @@ import {
 import DeleteCustomerButtonWithAlert from "./DeteleCustomerButtonWithAlert.jsx";
 import EditCustomerDrawer from "./EditCustomerDrawer.jsx";
 
-export default function CardWithImage({id, name, email, age, gender, fetchCustomers}) {
+export default function CustomerCard({id, name, email, age, gender, fetchCustomers}) {
     return (
         <Center py={6}>
             <Box

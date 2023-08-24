@@ -2,8 +2,8 @@ import SidebarWithHeader from "./components/shared/SideBar.jsx";
 import {useEffect, useState} from "react";
 import {getCustomers} from "./services/clients.js";
 import {Spinner, Text, Wrap, WrapItem} from "@chakra-ui/react";
-import CardWithImage from "./components/CardWithImage.jsx";
-import CreateCustomerDrawer from "./components/CreateCustomerDrawer.jsx";
+import CustomerCard from "./components/customer/CustomerCard.jsx";
+import CreateCustomerDrawer from "./components/customer/CreateCustomerDrawer.jsx";
 import {errorNotification} from "./services/notification.js";
 
 function App() {
@@ -52,7 +52,7 @@ function App() {
                 : <Wrap justify={"center"} spacing={"30px"}>
                     {customers.map((customer, index) => (
                         <WrapItem key={index}>
-                            <CardWithImage {...customer} fetchCustomers={fetchCustomers}/>
+                            <CustomerCard {...customer} fetchCustomers={fetchCustomers}/>
                         </WrapItem>
                     ))}
                 </Wrap>
