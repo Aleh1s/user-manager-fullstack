@@ -98,20 +98,13 @@ class CustomerServiceTest {
     @Test
     void getCustomerById() {
         // given
-        int id = FAKER.number().numberBetween(1, 10);
-        Customer customer = new Customer(
-                id,
-                FAKER.name().fullName(),
-                FAKER.internet().emailAddress(),
-                FAKER.number().numberBetween(18, 100),
-                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE,
-                FAKER.internet().password()
-        );
-        when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+        Customer expected = newCustomer();
+        when(customerRepository.findById(expected.getId()))
+                .thenReturn(Optional.of(expected));
         // when
-        Customer actualCustomer = underTest.getCustomerById(id);
+        Customer actual = underTest.getCustomerById(expected.getId());
         // then
-        assertEquals(customer, actualCustomer);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -123,5 +116,28 @@ class CustomerServiceTest {
         assertThatThrownBy(() -> underTest.getCustomerById(id))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Customer with id %d does not exist".formatted(id));
+    }
+
+    @Test
+    void getCustomerByEmail() {
+        // given
+        Customer expected = newCustomer();
+        when(customerRepository.findCustomerByEmail(expected.getEmail()))
+                .thenReturn(Optional.of(expected));
+        // when
+        Customer actual = underTest.getCustomerByEmail(expected.getEmail());
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    private Customer newCustomer() {
+        return new Customer(
+                FAKER.number().numberBetween(1, 1_000_000),
+                FAKER.name().fullName(),
+                FAKER.internet().emailAddress(),
+                FAKER.number().numberBetween(18, 100),
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE,
+                FAKER.internet().password()
+        );
     }
 }

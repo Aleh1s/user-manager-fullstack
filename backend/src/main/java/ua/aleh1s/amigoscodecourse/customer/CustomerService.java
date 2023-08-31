@@ -58,6 +58,11 @@ public class CustomerService {
         customerToUpdate.setGender(request.gender());
     }
 
+    public Customer getCustomerByEmail(String email) {
+        return customerRepository.findCustomerByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer with email " + email + " does not exist"));
+    }
+
     private void requireEmailNotPresent(String email) {
         if (existsCustomerByEmail(email)) {
             throw new DuplicateResourceException("Email %s is already taken".formatted(email));

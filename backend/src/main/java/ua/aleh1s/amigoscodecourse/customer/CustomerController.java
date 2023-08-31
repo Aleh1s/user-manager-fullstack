@@ -53,4 +53,11 @@ public class CustomerController {
     public void updateCustomerById(@PathVariable("id") Integer id, @RequestBody CustomerUpdateRequest request) {
         customerService.updateCustomerById(id, request);
     }
+
+    @GetMapping("/by-username/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public CustomerDto getCustomerByUsername(@PathVariable("username") String username) {
+        Customer customerByEmail = customerService.getCustomerByEmail(username);
+        return customerDtoMapper.apply(customerByEmail);
+    }
 }
