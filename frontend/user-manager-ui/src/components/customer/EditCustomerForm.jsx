@@ -1,40 +1,10 @@
-import {Alert, AlertIcon, Box, Button, FormLabel, Input, Select, Stack} from "@chakra-ui/react";
-import {Form, Formik, useField} from "formik";
+import {Box, Button, Stack} from "@chakra-ui/react";
+import {Form, Formik} from "formik";
 import * as Yup from "yup";
 import {updateCustomerById} from "../../services/clients.js";
 import {errorNotification, successNotification} from "../../services/notification.js";
-
-const MyTextInput = ({label, ...props}) => {
-    const [field, meta] = useField(props);
-    return (
-        <Box>
-            <FormLabel htmlFor={props.id || props.name}>{label}</FormLabel>
-            <Input className="text-input" {...field} {...props} />
-            {meta.touched && meta.error ? (
-                <Alert className="error" status={"error"} mt={2}>
-                    <AlertIcon/>
-                    {meta.error}
-                </Alert>
-            ) : null}
-        </Box>
-    );
-};
-
-const MySelect = ({label, ...props}) => {
-    const [field, meta] = useField(props);
-    return (
-        <Box>
-            <FormLabel htmlFor={props.id || props.name}>{label}</FormLabel>
-            <Select {...field} {...props} />
-            {meta.touched && meta.error ? (
-                <Alert className="error" status={"error"} mt={2}>
-                    <AlertIcon/>
-                    {meta.error}
-                </Alert>
-            ) : null}
-        </Box>
-    );
-};
+import MyTextInput from "../shared/MyTextInput.jsx";
+import MySelect from "../shared/MySelect.jsx";
 
 const EditCustomerForm = ({id, name, email, age, gender, fetchCustomers}) => {
     return (
@@ -49,27 +19,27 @@ const EditCustomerForm = ({id, name, email, age, gender, fetchCustomers}) => {
                 validationSchema={Yup.object({
                     name: Yup.string()
                         .max(50, 'Must be 50 characters or less')
-                        .required('Required'),
+                        .required('Name is required'),
                     email: Yup.string()
                         .email('Invalid email address')
-                        .required('Required'),
+                        .required('Email is required'),
                     age: Yup.number()
                         .min(16, 'Must be at least 16')
                         .max(120, 'Must be 120 or less')
-                        .required("Required"),
+                        .required("Age is required"),
                     gender: Yup.string()
                         .oneOf(
                             ['MALE', 'FEMALE'],
                             'Invalid Gender Type'
                         )
-                        .required('Required'),
+                        .required('Gender is required'),
                 })}
                 onSubmit={(customer, {setSubmitting}) => {
                     setSubmitting(true)
                     updateCustomerById(id, customer).then(() => {
                         successNotification(
-                            "Customer created successfully",
-                            `${customer.name} was created successfully`
+                            "Customer updated successfully",
+                            `${customer.name} was updated successfully`
                         )
                         fetchCustomers()
                     }).catch(err => {
