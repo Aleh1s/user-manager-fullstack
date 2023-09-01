@@ -1,21 +1,20 @@
 'use client'
 
-import {Box, Flex, Heading, Stack, Text, useColorModeValue,} from '@chakra-ui/react'
-import LoginForm from "./LoginForm.jsx";
+import {Flex, Heading, Stack, Text, useColorModeValue,} from '@chakra-ui/react'
+import SignUpForm from "./SignUpForm.jsx";
 import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
 
-const Login = () => {
-
+const SignUp = () => {
     const { isAuthenticated } = useAuth()
     const navigate = useNavigate()
 
     useEffect(() => {
         if (isAuthenticated()) {
-            navigate('/dashboard')
+            navigate("/dashboard")
         }
-    }, [])
+    })
 
     return (
         <Flex
@@ -25,23 +24,17 @@ const Login = () => {
             bg={useColorModeValue('gray.50', 'gray.800')}>
             <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
                 <Stack align={'center'}>
-                    <Heading fontSize={'4xl'}>Sign in to your account</Heading>
+                    <Heading fontSize={'4xl'} textAlign={'center'}>
+                        Sign up
+                    </Heading>
                     <Text fontSize={'lg'} color={'gray.600'}>
-                        to enjoy all of our cool <Text color={'blue.400'}>features</Text> ✌️
+                        to enjoy all of our cool features ✌️
                     </Text>
                 </Stack>
-                <Box
-                    rounded={'lg'}
-                    bg={useColorModeValue('white', 'gray.700')}
-                    boxShadow={'lg'}
-                    p={8}>
-                    <Stack spacing={4}>
-                        <LoginForm/>
-                    </Stack>
-                </Box>
+                <SignUpForm/>
             </Stack>
         </Flex>
     )
 }
 
-export default Login
+export default SignUp

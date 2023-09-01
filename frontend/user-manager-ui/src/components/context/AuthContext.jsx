@@ -42,6 +42,20 @@ const AuthProvider = ({children}) => {
         })
     }
 
+    const loginUsingToken = async (token) => {
+        return new Promise((resolve) => {
+            localStorage.setItem("access_token", token)
+            const {sub: username, scopes: roles} = jwtDecode(token)
+
+            setCustomer({
+                username,
+                roles
+            })
+
+            resolve(token)
+        })
+    }
+
     const logout = () => {
         if (localStorage.getItem("access_token")) {
             localStorage.removeItem("access_token")
@@ -66,7 +80,7 @@ const AuthProvider = ({children}) => {
     }
 
     return (
-        <AuthContext.Provider value={{customer, login, logout, isAuthenticated}}>
+        <AuthContext.Provider value={{customer, login, logout, isAuthenticated, loginUsingToken}}>
             {children}
         </AuthContext.Provider>
     )

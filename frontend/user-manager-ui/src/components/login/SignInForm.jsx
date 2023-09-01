@@ -1,12 +1,13 @@
 import {Form, Formik} from "formik";
 import * as Yup from "yup";
-import {Button, Stack} from "@chakra-ui/react";
+import {Button, Link, Stack} from "@chakra-ui/react";
 import MyTextInput from "../shared/MyTextInput.jsx";
 import {errorNotification} from "../../services/notification.js";
 import {useAuth} from "../context/AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
+import {LoginSchema} from "../validation/Schemas.jsx";
 
-const LoginForm = () => {
+const SignInForm = () => {
 
     const { login } = useAuth()
     const navigate = useNavigate()
@@ -15,15 +16,7 @@ const LoginForm = () => {
         <Formik
             validateOnMount={true}
             initialValues={{username: '', password: ''}}
-            validationSchema={Yup.object({
-                username: Yup.string()
-                    .email("Must be valid email")
-                    .required("Email is required"),
-                password: Yup.string()
-                    .min(6, "Password must be at least 6 characters")
-                    .max(20, "Password must be 20 characters or less")
-                    .required("Password is required")
-            })}
+            validationSchema={LoginSchema}
             onSubmit={(values, {setSubmitting}) => {
                 setSubmitting(true)
                 login(values).then(res => {
@@ -58,8 +51,11 @@ const LoginForm = () => {
                                 type={'submit'}
                                 isDisabled={!isValid || isSubmitting}
                             >
-                                Login
+                                Sign in
                             </Button>
+                            <Link href={'/registration'} color={'blue.500'}>
+                                Have no account?
+                            </Link>
                         </Stack>
                     </Form>
                 )
@@ -68,4 +64,4 @@ const LoginForm = () => {
     )
 }
 
-export default LoginForm
+export default SignInForm

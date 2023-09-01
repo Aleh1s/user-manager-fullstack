@@ -17,6 +17,7 @@
     "formik": "^2.4.2",
     "framer-motion": "^10.12.20",
     "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
@@ -24,6 +25,7 @@
     "yup": "^1.2.0"
   },
   "devDependencies": {
+    "@chakra-ui/icons": "^2.1.0",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@vitejs/plugin-react": "^4.0.1",

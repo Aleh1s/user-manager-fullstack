@@ -5,6 +5,7 @@ import {saveCustomer} from "../../services/clients.js";
 import {errorNotification, successNotification} from "../../services/notification.js";
 import MyTextInput from "../shared/MyTextInput.jsx";
 import MySelect from "../shared/MySelect.jsx";
+import {RegistrationSchema} from "../validation/Schemas.jsx";
 
 const CreateCustomerForm = ({ fetchCustomers }) => {
     return (
@@ -17,28 +18,7 @@ const CreateCustomerForm = ({ fetchCustomers }) => {
                     password: '',
                     gender: '',
                 }}
-                validationSchema={Yup.object({
-                    name: Yup.string()
-                        .max(50, 'Must be 50 characters or less')
-                        .required('Name is required'),
-                    email: Yup.string()
-                        .email('Invalid email address')
-                        .required('Email is required'),
-                    age: Yup.number()
-                        .min(16, 'Must be at least 16')
-                        .max(120, 'Must be 120 or less')
-                        .required("Age is required"),
-                    password : Yup.string()
-                        .min(6, 'Must be at least 6 characters')
-                        .max(20, 'Must be 20 characters or less')
-                        .required('Password is required'),
-                    gender: Yup.string()
-                        .oneOf(
-                            ['MALE', 'FEMALE'],
-                            'Invalid Gender Type'
-                        )
-                        .required('Gender is required'),
-                })}
+                validationSchema={RegistrationSchema}
                 onSubmit={(customer, {setSubmitting}) => {
                     setSubmitting(true)
                     saveCustomer(customer).then(() => {

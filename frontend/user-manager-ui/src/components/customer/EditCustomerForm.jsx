@@ -5,35 +5,20 @@ import {updateCustomerById} from "../../services/clients.js";
 import {errorNotification, successNotification} from "../../services/notification.js";
 import MyTextInput from "../shared/MyTextInput.jsx";
 import MySelect from "../shared/MySelect.jsx";
+import {EditCustomerSchema} from "../validation/Schemas.jsx";
 
 const EditCustomerForm = ({id, name, email, age, gender, fetchCustomers}) => {
     return (
         <Box>
             <Formik
+                validateOnMount={true}
                 initialValues={{
                     name: name,
                     email: email,
                     age: age,
                     gender: gender,
                 }}
-                validationSchema={Yup.object({
-                    name: Yup.string()
-                        .max(50, 'Must be 50 characters or less')
-                        .required('Name is required'),
-                    email: Yup.string()
-                        .email('Invalid email address')
-                        .required('Email is required'),
-                    age: Yup.number()
-                        .min(16, 'Must be at least 16')
-                        .max(120, 'Must be 120 or less')
-                        .required("Age is required"),
-                    gender: Yup.string()
-                        .oneOf(
-                            ['MALE', 'FEMALE'],
-                            'Invalid Gender Type'
-                        )
-                        .required('Gender is required'),
-                })}
+                validationSchema={EditCustomerSchema}
                 onSubmit={(customer, {setSubmitting}) => {
                     setSubmitting(true)
                     updateCustomerById(id, customer).then(() => {
@@ -83,7 +68,7 @@ const EditCustomerForm = ({id, name, email, age, gender, fetchCustomers}) => {
                                 <option value="FEMALE">Female</option>
                             </MySelect>
 
-                            <Button disabled={!isValid || isSubmitting} type="submit">Submit</Button>
+                            <Button isDisabled={!isValid || isSubmitting} type="submit">Submit</Button>
                         </Stack>
                     </Form>
                 )}
