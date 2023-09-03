@@ -5,12 +5,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import ua.aleh1s.amigoscodecourse.custom.CustomPageImpl;
 import ua.aleh1s.amigoscodecourse.customer.*;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -50,22 +55,17 @@ public class CustomerIT {
                 .getFirst(AUTHORIZATION);
 
         String jwtToken = JWT_TEMPLATE.formatted(jwt);
-        List<CustomerDto> allCustomers = webTestClient.get()
-                .uri(CUSTOMER_URI)
+        CustomerDto registeredCustomer = webTestClient.get()
+                .uri("%s/by-username/%s".formatted(CUSTOMER_URI, request.email()))
                 .accept(MediaType.APPLICATION_JSON)
                 .header(AUTHORIZATION, jwtToken)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(CustomerDto.class)
+                .expectBody(CustomerDto.class)
                 .returnResult()
                 .getResponseBody();
 
-        int id = allCustomers.stream()
-                .filter(customer -> customer.email().equals(request.email()))
-                .mapToInt(CustomerDto::id)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Expected customer does not exist!"));
-
+        Integer id = registeredCustomer.id();
         CustomerDto expectedCustomer = new CustomerDto(
                 id,
                 request.name(),
@@ -76,15 +76,7 @@ public class CustomerIT {
                 request.email()
         );
 
-        assertThat(allCustomers).contains(expectedCustomer);
-
-        webTestClient.get()
-                .uri(CUSTOMER_URI + "/{id}", id)
-                .accept(MediaType.APPLICATION_JSON)
-                .header(AUTHORIZATION, jwtToken)
-                .exchange()
-                .expectBody(CustomerDto.class)
-                .isEqualTo(expectedCustomer);
+        assertThat(registeredCustomer).isEqualTo(expectedCustomer);
     }
 
     @Test
@@ -112,22 +104,17 @@ public class CustomerIT {
                 .expectStatus().isEqualTo(HttpStatus.CREATED);
 
         String jwtToken = JWT_TEMPLATE.formatted(jwt);
-        List<CustomerDto> allCustomers = webTestClient.get()
-                .uri(CUSTOMER_URI)
+        CustomerDto registeredCustomer = webTestClient.get()
+                .uri("%s/by-username/%s".formatted(CUSTOMER_URI, requestToRegisterCustomer.email()))
                 .accept(MediaType.APPLICATION_JSON)
                 .header(AUTHORIZATION, jwtToken)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(CustomerDto.class)
+                .expectBody(CustomerDto.class)
                 .returnResult()
                 .getResponseBody();
 
-        int id = allCustomers.stream()
-                .filter(customer -> customer.email().equals(requestToRegisterCustomer.email()))
-                .mapToInt(CustomerDto::id)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Expected customer does not exist!"));
-
+        Integer id = registeredCustomer.id();
         webTestClient.delete()
                 .uri(CUSTOMER_URI + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
@@ -168,24 +155,19 @@ public class CustomerIT {
                 .expectStatus().isEqualTo(HttpStatus.CREATED);
 
         String jwtToken = JWT_TEMPLATE.formatted(jwt);
-        List<CustomerDto> allCustomers = webTestClient.get()
-                .uri(CUSTOMER_URI)
+        CustomerDto registeredCustomer = webTestClient.get()
+                .uri("%s/by-username/%s".formatted(CUSTOMER_URI, requestToRegisterCustomer.email()))
                 .accept(MediaType.APPLICATION_JSON)
                 .header(AUTHORIZATION, jwtToken)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(CustomerDto.class)
+                .expectBody(CustomerDto.class)
                 .returnResult()
                 .getResponseBody();
 
-        int id = allCustomers.stream()
-                .filter(customer -> customer.email().equals(requestToRegisterCustomer.email()))
-                .mapToInt(CustomerDto::id)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Expected customer does not exist!"));
+        int id = registeredCustomer.id();
 
         CustomerUpdateRequest customerUpdateRequest = newCustomerUpdateRequest();
-
         webTestClient.put()
                 .uri(CUSTOMER_URI + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
@@ -217,6 +199,68 @@ public class CustomerIT {
         );
 
         assertThat(updatedCustomer).isEqualTo(expectedCustomer);
+    }
+
+    @Test
+    void canGetPageOfCustomers() {
+        CustomerRegistrationRequest requestToGetJwt = newCustomerCreateRequest();
+        List<CustomerRegistrationRequest> requests = IntStream.range(0, 49)
+                .mapToObj(i -> newCustomerCreateRequest())
+                .toList();
+
+        requests.forEach(request -> webTestClient.post()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isEqualTo(HttpStatus.CREATED)
+        );
+
+        String jwt = webTestClient.post()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestToGetJwt)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CREATED)
+                .returnResult(Void.class)
+                .getResponseHeaders()
+                .getFirst(AUTHORIZATION);
+
+        String bearerToken = JWT_TEMPLATE.formatted(jwt);
+        Page<CustomerDto> firstPageOfCustomers = webTestClient.get()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, bearerToken)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<CustomPageImpl<CustomerDto>>() {})
+                .returnResult()
+                .getResponseBody();
+
+        Page<CustomerDto> secondPageOfCustomers = webTestClient.get()
+                .uri("%s?page=1&size=10".formatted(CUSTOMER_URI))
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, bearerToken)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<CustomPageImpl<CustomerDto>>() {})
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(firstPageOfCustomers).isNotNull();
+        assertThat(firstPageOfCustomers.getTotalElements()).isEqualTo(50);
+        assertThat(firstPageOfCustomers.getTotalPages()).isEqualTo(2);
+        assertThat(firstPageOfCustomers.getSize()).isEqualTo(25);
+        assertThat(firstPageOfCustomers.getNumber()).isEqualTo(0);
+
+        assertThat(secondPageOfCustomers).isNotNull();
+        assertThat(secondPageOfCustomers.getTotalElements()).isEqualTo(50);
+        assertThat(secondPageOfCustomers.getTotalPages()).isEqualTo(5);
+        assertThat(secondPageOfCustomers.getSize()).isEqualTo(10);
+        assertThat(secondPageOfCustomers.getNumber()).isEqualTo(1);
     }
 
     private static CustomerRegistrationRequest newCustomerCreateRequest() {

@@ -1,6 +1,7 @@
 package ua.aleh1s.amigoscodecourse.customer;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +30,10 @@ public class CustomerController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<CustomerDto> getAllCustomers() {
-        return customerService.getAllCustomers().stream()
-                .map(customerDtoMapper)
-                .toList();
+    public Page<CustomerDto> getAllCustomers(@RequestParam(value = "page", defaultValue = "0") int page,
+                                             @RequestParam(value = "size", defaultValue = "25") int size) {
+        return customerService.getAllCustomers(page, size)
+                .map(customerDtoMapper);
     }
 
     @GetMapping("/{id}")

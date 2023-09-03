@@ -1,6 +1,9 @@
 package ua.aleh1s.amigoscodecourse.customer;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +45,14 @@ public class CustomerService {
         return customerRepository.existsCustomerByEmail(email);
     }
 
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+    public Page<Customer> getAllCustomers(int page, int size) {
+        if (page < 0) {
+            page = 0;
+        }
+        if (size < 1 || size > 100) {
+            size = 25;
+        }
+        return customerRepository.findAll(PageRequest.of(page, size, Sort.by("id")));
     }
 
     @Transactional
