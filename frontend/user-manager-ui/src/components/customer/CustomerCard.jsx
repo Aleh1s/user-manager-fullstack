@@ -16,8 +16,7 @@ export default function CustomerCard({id, name, email, age, gender, fetchCustome
     return (
         <Center py={6}>
             <Box
-                maxW={'300px'}
-                w={'full'}
+                w={'320px'}
                 bg={useColorModeValue('white', 'gray.800')}
                 boxShadow={'2xl'}
                 rounded={'md'}
