@@ -73,13 +73,20 @@ export const login = async (loginRequest) => {
     }
 }
 
-export const getCustomerByUsername = async (username) => {
+export const uploadCustomerProfileImage = async (id, formData) => {
     try {
-        return await axios.get(
-            `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers/by-username/${username}`,
-            getAuthConfig()
+        return await axios.post(
+            `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers/${id}/profile-image`,
+            formData,
+            {
+                ...getAuthConfig(),
+                'Content-Type': 'multipart/form-data'
+            }
         )
     } catch (error) {
         throw error
     }
 }
+
+export const getCustomerProfileImageUrl = (id) =>
+    `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers/${id}/profile-image`

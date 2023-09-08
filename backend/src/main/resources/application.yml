@@ -12,6 +12,12 @@ spring:
         format_sql: true
         highlight_sql: true
     show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  codec:
+    max-in-memory-size: 5MB
 
 cors:
   allowed-origins: "*"
@@ -19,9 +25,14 @@ cors:
   allowed-headers: "*"
   exposed-headers: "*"
 
+storage:
+  buckets:
+    customer: customer
+
 server:
   error:
     include-message: always
+
 
 logging:
   level:

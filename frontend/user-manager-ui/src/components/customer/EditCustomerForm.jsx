@@ -1,15 +1,27 @@
-import {Box, Button, Stack} from "@chakra-ui/react";
+import {Box, Button, Image, Stack, VStack} from "@chakra-ui/react";
 import {Form, Formik} from "formik";
-import * as Yup from "yup";
-import {updateCustomerById} from "../../services/clients.js";
+import {getCustomerProfileImageUrl, updateCustomerById} from "../../services/clients.js";
 import {errorNotification, successNotification} from "../../services/notification.js";
 import MyTextInput from "../shared/MyTextInput.jsx";
 import MySelect from "../shared/MySelect.jsx";
 import {EditCustomerSchema} from "../validation/Schemas.jsx";
+import MyDropzone from "../shared/MyDropzone.jsx";
 
 const EditCustomerForm = ({id, name, email, age, gender, fetchCustomers}) => {
     return (
         <Box>
+            <VStack
+                spacing={5}
+                mb={5}
+            >
+                <Image
+                    borderRadius={'full'}
+                    boxSize={'150px'}
+                    objectFit={'cover'}
+                    src={getCustomerProfileImageUrl(id)}
+                />
+                <MyDropzone id={id} fetchCustomers={fetchCustomers}/>
+            </VStack>
             <Formik
                 validateOnMount={true}
                 initialValues={{

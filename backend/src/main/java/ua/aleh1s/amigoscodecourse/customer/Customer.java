@@ -37,6 +37,9 @@ public class Customer implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "profile_image_id")
+    private String profileImageId;
+
     public Customer(Integer id,
                     String name,
                     String email,
@@ -61,6 +64,22 @@ public class Customer implements UserDetails {
         this.age = age;
         this.gender = gender;
         this.password = password;
+    }
+
+    public Customer(Integer id,
+                    String name,
+                    String email,
+                    int age,
+                    Gender gender,
+                    String password,
+                    String profileImageId) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.age = age;
+        this.gender = gender;
+        this.password = password;
+        this.profileImageId = profileImageId;
     }
 
     @Override

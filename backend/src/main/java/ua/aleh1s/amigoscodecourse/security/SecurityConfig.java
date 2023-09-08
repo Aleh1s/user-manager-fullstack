@@ -38,6 +38,10 @@ public class SecurityConfig {
                             "/api/v1/customers",
                             "/api/v1/auth/login"
                     ).permitAll();
+                    authorize.requestMatchers(
+                            HttpMethod.GET,
+                            "/api/v1/customers/*/profile-image"
+                    ).permitAll();
                     authorize.anyRequest().authenticated();
                 }).sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
                 .exceptionHandling(eh -> eh.authenticationEntryPoint(delegatedAuthEntryPoint))

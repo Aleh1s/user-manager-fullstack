@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import DeleteCustomerButtonWithAlert from "./DeteleCustomerButtonWithAlert.jsx";
 import EditCustomerDrawer from "./EditCustomerDrawer.jsx";
+import {getCustomerProfileImageUrl} from "../../services/clients.js";
 
 export default function CustomerCard({id, name, email, age, gender, fetchCustomers}) {
     return (
@@ -32,9 +33,7 @@ export default function CustomerCard({id, name, email, age, gender, fetchCustome
                 <Flex justify={'center'} mt={-12}>
                     <Avatar
                         size={'xl'}
-                        src={
-                            `https://randomuser.me/api/portraits/${gender === 'MALE' ? 'men' : 'women'}/${id}.jpg`
-                        }
+                        src={getCustomerProfileImageUrl(id)}
                         alt={'Author'}
                         css={{
                             border: '2px solid white',

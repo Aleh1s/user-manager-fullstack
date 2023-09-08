@@ -7,10 +7,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import ua.aleh1s.amigoscodecourse.custom.UUIDGenerator;
 import ua.aleh1s.amigoscodecourse.exception.DuplicateResourceException;
 import ua.aleh1s.amigoscodecourse.exception.ResourceNotFoundException;
+import ua.aleh1s.amigoscodecourse.storage.Buckets;
+import ua.aleh1s.amigoscodecourse.storage.S3Service;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -18,13 +23,16 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UUIDGenerator uuidGenerator;
+    private final S3Service s3Service;
+    private final Buckets buckets;
 
     public Customer getCustomerById(Integer id) {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer with id " + id + " does not exist"));
     }
 
-    public void saveCustomer(CustomerRegistrationRequest request) {
+    public void registerCustomer(CustomerRegistrationRequest request) {
         String email = request.email();
         requireEmailNotPresent(email);
         Customer customer = new Customer(
@@ -75,6 +83,42 @@ public class CustomerService {
     private void requireEmailNotPresent(String email) {
         if (existsCustomerByEmail(email)) {
             throw new DuplicateResourceException("Email %s is already taken".formatted(email));
+        }
+    }
+
+    @Transactional
+    public void uploadCustomerProfileImage(Integer id, MultipartFile file) {
+        checkIfCustomerExistsByIdOrThrow(id);
+        String profileImageId = uuidGenerator.generateUUID();
+        try {
+            s3Service.putObject(
+                    buckets.getCustomer(),
+                    "profile-image/%d/%s".formatted(id, profileImageId),
+                    file.getBytes()
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image", e);
+        }
+        customerRepository.updateCustomerProfileImageIdByCustomerId(id, profileImageId);
+    }
+
+    public byte[] downloadCustomerProfileImage(Integer id) {
+        Customer customer = getCustomerById(id);
+
+        String profileImageId = customer.getProfileImageId();
+        if (Objects.isNull(profileImageId)) {
+            throw new ResourceNotFoundException("Customer with id " + id + " does not have profile image");
+        }
+
+        return s3Service.getObject(
+                buckets.getCustomer(),
+                "profile-image/%d/%s".formatted(id, profileImageId)
+        );
+    }
+
+    private void checkIfCustomerExistsByIdOrThrow(Integer id) {
+        if (!customerRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Customer with id " + id + " does not exist");
         }
     }
 }

@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ua.aleh1s.amigoscodecourse.jwt.JwtUtil;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class CustomerController {
 
     @PostMapping()
     public ResponseEntity<?> registerCustomer(@RequestBody CustomerRegistrationRequest request) {
-        customerService.saveCustomer(request);
+        customerService.registerCustomer(request);
         String jwt = jwtUtil.issueToken(request.email(), "ROLE_USER");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header(HttpHeaders.AUTHORIZATION, jwt)
@@ -60,5 +60,18 @@ public class CustomerController {
     public CustomerDto getCustomerByUsername(@PathVariable("username") String username) {
         Customer customerByEmail = customerService.getCustomerByEmail(username);
         return customerDtoMapper.apply(customerByEmail);
+    }
+
+    @PostMapping(value = "/{id}/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public void uploadCustomerProfileImage(@PathVariable("id") Integer id,
+                                           @RequestParam("file") MultipartFile file) {
+        customerService.uploadCustomerProfileImage(id, file);
+    }
+
+    @GetMapping(value = "/{id}/profile-image", produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public byte[] downloadCustomerProfileImage(@PathVariable("id") Integer id) {
+        return customerService.downloadCustomerProfileImage(id);
     }
 }
