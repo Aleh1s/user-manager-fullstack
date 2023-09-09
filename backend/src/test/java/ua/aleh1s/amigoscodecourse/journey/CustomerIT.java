@@ -77,7 +77,7 @@ public class CustomerIT {
                 request.name(),
                 request.email(),
                 request.age(),
-                request.gender(),
+                Gender.valueOf(request.gender()),
                 List.of("ROLE_USER"),
                 request.email(),
                 null
@@ -200,7 +200,7 @@ public class CustomerIT {
                 customerUpdateRequest.name(),
                 customerUpdateRequest.email(),
                 customerUpdateRequest.age(),
-                customerUpdateRequest.gender(),
+                Gender.valueOf(customerUpdateRequest.gender()),
                 List.of("ROLE_USER"),
                 customerUpdateRequest.email(),
                 null
@@ -352,7 +352,7 @@ public class CustomerIT {
                 FAKER.internet().emailAddress(),
                 FAKER.internet().password(),
                 FAKER.number().numberBetween(18, 100),
-                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? "MALE" : "FEMALE"
         );
     }
 
@@ -361,7 +361,7 @@ public class CustomerIT {
                 FAKER.name().fullName(),
                 FAKER.internet().emailAddress(),
                 FAKER.number().numberBetween(18, 100),
-                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? "MALE" : "FEMALE"
         );
     }
 }

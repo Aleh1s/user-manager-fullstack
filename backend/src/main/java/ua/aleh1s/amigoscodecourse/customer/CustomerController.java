@@ -1,5 +1,6 @@
 package ua.aleh1s.amigoscodecourse.customer;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,7 @@ public class CustomerController {
     private final CustomerDtoMapper customerDtoMapper;
 
     @PostMapping()
-    public ResponseEntity<?> registerCustomer(@RequestBody CustomerRegistrationRequest request) {
+    public ResponseEntity<?> registerCustomer(@Valid @RequestBody CustomerRegistrationRequest request) {
         customerService.registerCustomer(request);
         String jwt = jwtUtil.issueToken(request.email(), "ROLE_USER");
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -51,7 +52,8 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCustomerById(@PathVariable("id") Integer id, @RequestBody CustomerUpdateRequest request) {
+    public void updateCustomerById(@PathVariable("id") Integer id,
+                                   @Valid @RequestBody CustomerUpdateRequest request) {
         customerService.updateCustomerById(id, request);
     }
 

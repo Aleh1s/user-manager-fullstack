@@ -39,7 +39,7 @@ public class CustomerService {
                 request.name(),
                 request.email(),
                 request.age(),
-                request.gender(),
+                Gender.valueOf(request.gender()),
                 passwordEncoder.encode(request.password())
         );
         customerRepository.save(customer);
@@ -72,7 +72,7 @@ public class CustomerService {
         }
         customerToUpdate.setName(request.name());
         customerToUpdate.setAge(request.age());
-        customerToUpdate.setGender(request.gender());
+        customerToUpdate.setGender(Gender.valueOf(request.gender()));
     }
 
     public Customer getCustomerByEmail(String email) {

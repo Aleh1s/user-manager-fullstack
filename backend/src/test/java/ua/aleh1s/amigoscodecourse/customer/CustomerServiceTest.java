@@ -58,7 +58,7 @@ class CustomerServiceTest {
         assertThat(actual.getName()).isEqualTo(request.name());
         assertThat(actual.getEmail()).isEqualTo(request.email());
         assertThat(actual.getAge()).isEqualTo(request.age());
-        assertThat(actual.getGender()).isEqualTo(request.gender());
+        assertThat(actual.getGender()).isEqualTo(Gender.valueOf(request.gender()));
         assertThat(actual.getPassword()).isEqualTo(hashedPassword);
     }
 
@@ -80,7 +80,7 @@ class CustomerServiceTest {
                 FAKER.internet().emailAddress(),
                 FAKER.internet().password(),
                 FAKER.number().numberBetween(18, 100),
-                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? "MALE" : "FEMALE"
         );
     }
 

@@ -11,7 +11,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import ua.aleh1s.amigoscodecourse.auth.LoginRequest;
 import ua.aleh1s.amigoscodecourse.auth.LoginResponse;
 import ua.aleh1s.amigoscodecourse.customer.CustomerRegistrationRequest;
-import ua.aleh1s.amigoscodecourse.customer.Gender;
 import ua.aleh1s.amigoscodecourse.jwt.JwtUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +48,7 @@ public class AuthenticationIT {
                 FAKER.internet().emailAddress(),
                 FAKER.internet().password(),
                 FAKER.number().numberBetween(18, 120),
-                FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE
+                FAKER.number().numberBetween(0, 2) % 2 == 0 ? "MALE" : "FEMALE"
         );
 
         webTestClient.post()
