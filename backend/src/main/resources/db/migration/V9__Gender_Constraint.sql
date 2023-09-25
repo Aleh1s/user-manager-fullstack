@@ -1,0 +1,1 @@
+alter table customer alter column gender drop not null;

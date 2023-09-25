@@ -18,6 +18,20 @@ spring:
       max-request-size: 5MB
   codec:
     max-in-memory-size: 5MB
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
+          github:
+            redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - user:email
+              - read:user
 
 cors:
   allowed-origins: "*"
@@ -33,6 +47,9 @@ server:
   error:
     include-message: always
 
+app:
+  oauth2:
+    authorized-redirect-uri: http://localhost:5173/oauth2/redirect
 
 logging:
   level:

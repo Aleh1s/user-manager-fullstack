@@ -5,7 +5,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import ua.aleh1s.amigoscodecourse.customer.Customer;
 
 import java.security.Key;
 import java.time.Instant;
@@ -13,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static java.time.temporal.ChronoUnit.*;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 public class JwtUtil {
@@ -40,6 +43,14 @@ public class JwtUtil {
                 .setExpiration(Date.from(Instant.now().plus(15, DAYS)))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String issueToken(Authentication authentication) {
+        Customer principal = (Customer) authentication.getPrincipal();
+        List<String> roles = principal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+        return issueToken(principal.getEmail(), roles);
     }
 
     private Key getSigningKey() {

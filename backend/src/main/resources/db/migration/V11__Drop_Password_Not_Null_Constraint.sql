@@ -1,0 +1,1 @@
+alter table customer alter column password drop not null;

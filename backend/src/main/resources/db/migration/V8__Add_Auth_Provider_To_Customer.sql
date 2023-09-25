@@ -1,0 +1,1 @@
+alter table customer add column auth_provider varchar(255) default 'CUSTOM';

@@ -1,13 +1,19 @@
 package ua.aleh1s.amigoscodecourse.customer;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import ua.aleh1s.amigoscodecourse.oauth2.AuthProvider;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Entity()
 @Getter()
@@ -15,7 +21,7 @@ import java.util.List;
 @Table(name = "customer")
 @NoArgsConstructor()
 @EqualsAndHashCode()
-public class Customer implements UserDetails {
+public class Customer implements UserDetails, OAuth2User {
 
     @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +34,7 @@ public class Customer implements UserDetails {
     private String email;
 
     @Column(name = "age")
-    private int age;
+    private Integer age;
 
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
@@ -37,49 +43,64 @@ public class Customer implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
+
     @Column(name = "profile_image_id")
     private String profileImageId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider")
+    private AuthProvider authProvider;
 
     public Customer(Integer id,
                     String name,
                     String email,
-                    int age,
+                    Integer age,
                     Gender gender,
-                    String password) {
+                    String password,
+                    AuthProvider authProvider) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.age = age;
         this.gender = gender;
         this.password = password;
+        this.authProvider = authProvider;
     }
 
     public Customer(String name,
                     String email,
-                    int age,
-                    Gender gender,
-                    String password) {
-        this.name = name;
-        this.email = email;
-        this.age = age;
-        this.gender = gender;
-        this.password = password;
-    }
-
-    public Customer(Integer id,
-                    String name,
-                    String email,
-                    int age,
+                    Integer age,
                     Gender gender,
                     String password,
-                    String profileImageId) {
-        this.id = id;
+                    AuthProvider authProvider) {
         this.name = name;
         this.email = email;
         this.age = age;
         this.gender = gender;
         this.password = password;
-        this.profileImageId = profileImageId;
+        this.authProvider = authProvider;
+    }
+
+    public Customer(String name,
+                    String email,
+                    String profileImageUrl,
+                    AuthProvider authProvider) {
+        this.name = name;
+        this.email = email;
+        this.profileImageUrl = profileImageUrl;
+        this.authProvider = authProvider;
+    }
+
+    @Override
+    public <A> A getAttribute(String name) {
+        return OAuth2User.super.getAttribute(name);
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
     }
 
     @Override

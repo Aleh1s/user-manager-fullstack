@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ua.aleh1s.amigoscodecourse.custom.UUIDGenerator;
 import ua.aleh1s.amigoscodecourse.exception.DuplicateResourceException;
 import ua.aleh1s.amigoscodecourse.exception.ResourceNotFoundException;
+import ua.aleh1s.amigoscodecourse.oauth2.AuthProvider;
 import ua.aleh1s.amigoscodecourse.storage.Buckets;
 import ua.aleh1s.amigoscodecourse.storage.S3Service;
 
@@ -40,8 +41,8 @@ public class CustomerService {
                 request.email(),
                 request.age(),
                 Gender.valueOf(request.gender()),
-                passwordEncoder.encode(request.password())
-        );
+                passwordEncoder.encode(request.password()),
+                AuthProvider.CUSTOM);
         customerRepository.save(customer);
     }
 

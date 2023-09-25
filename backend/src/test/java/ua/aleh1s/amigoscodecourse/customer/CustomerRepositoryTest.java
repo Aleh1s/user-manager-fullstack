@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ua.aleh1s.amigoscodecourse.BaseTestcontainers;
+import ua.aleh1s.amigoscodecourse.oauth2.AuthProvider;
 
 import java.util.UUID;
 
@@ -84,7 +85,7 @@ class CustomerRepositoryTest extends BaseTestcontainers {
                 FAKER.internet().emailAddress(),
                 FAKER.number().numberBetween(18, 100),
                 FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE,
-                FAKER.internet().password()
-        );
+                FAKER.internet().password(),
+                AuthProvider.CUSTOM);
     }
 }

@@ -1,4 +1,5 @@
 import axios from "axios";
+import {API_BASE_URL} from "../components/constant/constants.js";
 
 const getAuthConfig = () => ({
     headers: {
@@ -9,7 +10,7 @@ const getAuthConfig = () => ({
 export const getCustomers = async (page, size) => {
     try {
         return await axios.get(
-            `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers?page=${page}&size=${size}`,
+            `${API_BASE_URL}/api/v1/customers?page=${page}&size=${size}`,
             getAuthConfig()
         )
     } catch (error) {
@@ -20,7 +21,7 @@ export const getCustomers = async (page, size) => {
 export const saveCustomer = async (customer) => {
     try {
         return await axios.post(
-            `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers`,
+            `${API_BASE_URL}/api/v1/customers`,
             customer
         )
     } catch (error) {
@@ -31,7 +32,7 @@ export const saveCustomer = async (customer) => {
 export const deleteCustomerById = async (id) => {
     try {
         return await axios.delete(
-            `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers/${id}`,
+            `${API_BASE_URL}/api/v1/customers/${id}`,
             getAuthConfig()
         )
     } catch (error) {
@@ -42,7 +43,7 @@ export const deleteCustomerById = async (id) => {
 export const getCustomerById = async (id) => {
     try {
         return await axios.get(
-            `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers/${id}`,
+            `${API_BASE_URL}/api/v1/customers/${id}`,
             getAuthConfig()
         )
     } catch (error) {
@@ -53,7 +54,7 @@ export const getCustomerById = async (id) => {
 export const updateCustomerById = async (id, customer) => {
     try {
         return await axios.put(
-            `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers/${id}`,
+            `${API_BASE_URL}/api/v1/customers/${id}`,
             customer,
             getAuthConfig()
         )
@@ -65,7 +66,7 @@ export const updateCustomerById = async (id, customer) => {
 export const login = async (loginRequest) => {
     try {
         return await axios.post(
-            `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/login`,
+            `${API_BASE_URL}/api/v1/auth/login`,
             loginRequest
         )
     } catch (error) {
@@ -76,7 +77,7 @@ export const login = async (loginRequest) => {
 export const uploadCustomerProfileImage = async (id, formData) => {
     try {
         return await axios.post(
-            `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers/${id}/profile-image`,
+            `${API_BASE_URL}/api/v1/customers/${id}/profile-image`,
             formData,
             {
                 ...getAuthConfig(),
@@ -89,4 +90,4 @@ export const uploadCustomerProfileImage = async (id, formData) => {
 }
 
 export const getCustomerProfileImageUrl = (id) =>
-    `${import.meta.env.VITE_API_BASE_URL}/api/v1/customers/${id}/profile-image`
+    `${API_BASE_URL}/api/v1/customers/${id}/profile-image`

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ua.aleh1s.amigoscodecourse.custom.UUIDGenerator;
 import ua.aleh1s.amigoscodecourse.exception.DuplicateResourceException;
 import ua.aleh1s.amigoscodecourse.exception.ResourceNotFoundException;
+import ua.aleh1s.amigoscodecourse.oauth2.AuthProvider;
 import ua.aleh1s.amigoscodecourse.storage.Buckets;
 import ua.aleh1s.amigoscodecourse.storage.S3Service;
 
@@ -266,7 +267,7 @@ class CustomerServiceTest {
                 FAKER.internet().emailAddress(),
                 FAKER.number().numberBetween(18, 100),
                 FAKER.number().numberBetween(0, 2) % 2 == 0 ? Gender.MALE : Gender.FEMALE,
-                FAKER.internet().password()
-        );
+                FAKER.internet().password(),
+                AuthProvider.CUSTOM);
     }
 }

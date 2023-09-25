@@ -13,7 +13,7 @@ import DeleteCustomerButtonWithAlert from "./DeteleCustomerButtonWithAlert.jsx";
 import EditCustomerDrawer from "./EditCustomerDrawer.jsx";
 import {getCustomerProfileImageUrl} from "../../services/clients.js";
 
-export default function CustomerCard({id, name, email, age, gender, fetchCustomers}) {
+export default function CustomerCard({id, name, email, age, gender, profileImageId, profileImageUrl, fetchCustomers}) {
     return (
         <Center py={6}>
             <Box
@@ -33,7 +33,7 @@ export default function CustomerCard({id, name, email, age, gender, fetchCustome
                 <Flex justify={'center'} mt={-12}>
                     <Avatar
                         size={'xl'}
-                        src={getCustomerProfileImageUrl(id)}
+                        src={profileImageId ? getCustomerProfileImageUrl(id) : profileImageUrl}
                         alt={'Author'}
                         css={{
                             border: '2px solid white',
@@ -48,7 +48,7 @@ export default function CustomerCard({id, name, email, age, gender, fetchCustome
                             {name}
                         </Heading>
                         <Text color={'gray.500'}>{email}</Text>
-                        <Text color={'gray.500'}>Age {age} | {gender.substring(0, 1) + gender.substring(1, gender.length).toLowerCase()}</Text>
+                        <Text color={'gray.500'}>Age {age ?? 'None'} | {gender ? gender.substring(0, 1) + gender.substring(1, gender.length).toLowerCase() : "None"}</Text>
                     </Stack>
                 </Box>
                 <Flex justify={'center'} mb={3} gap={2} mx={4}>

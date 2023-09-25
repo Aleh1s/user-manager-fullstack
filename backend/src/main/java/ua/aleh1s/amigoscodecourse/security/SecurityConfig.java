@@ -16,6 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ua.aleh1s.amigoscodecourse.exception.DelegatedAuthEntryPoint;
 import ua.aleh1s.amigoscodecourse.jwt.JwtAuthenticationFilter;
+import ua.aleh1s.amigoscodecourse.oauth2.CustomOAuth2UserService;
+import ua.aleh1s.amigoscodecourse.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import ua.aleh1s.amigoscodecourse.oauth2.OAuth2AuthenticationFailureHandler;
+import ua.aleh1s.amigoscodecourse.oauth2.OAuth2AuthenticationSuccessHandler;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -26,6 +30,10 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final DelegatedAuthEntryPoint delegatedAuthEntryPoint;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,11 +48,25 @@ public class SecurityConfig {
                     ).permitAll();
                     authorize.requestMatchers(
                             HttpMethod.GET,
-                            "/api/v1/customers/*/profile-image"
+                            "/api/v1/customers/*/profile-image",
+                            "/oauth2/authorize/**",
+                            "/oauth2/callback/*",
+                            "/favicon.ico",
+                            "/error"
                     ).permitAll();
                     authorize.anyRequest().authenticated();
                 }).sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
                 .exceptionHandling(eh -> eh.authenticationEntryPoint(delegatedAuthEntryPoint))
+                .oauth2Login(c -> {
+                    c.authorizationEndpoint(ae -> {
+                        ae.authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository);
+                        ae.baseUri("/oauth2/authorize");
+                    });
+                    c.redirectionEndpoint(re -> re.baseUri("/oauth2/callback/*"));
+                    c.userInfoEndpoint(ui -> ui.userService(customOAuth2UserService));
+                    c.successHandler(oAuth2AuthenticationSuccessHandler);
+                    c.failureHandler(oAuth2AuthenticationFailureHandler);
+                })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

@@ -6,6 +6,7 @@
 */user-manager-api.iml
 .github/workflows/backend-cd.yml
 ./frontend
+*/src/test/resources/application-test.yaml
 
 #Frontend
 logs

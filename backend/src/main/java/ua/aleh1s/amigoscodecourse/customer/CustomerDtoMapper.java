@@ -20,6 +20,8 @@ public class CustomerDtoMapper implements Function<Customer, CustomerDto> {
                         .map(GrantedAuthority::getAuthority)
                         .toList(),
                 customer.getUsername(),
-                customer.getProfileImageId());
+                customer.getProfileImageId(),
+                customer.getProfileImageUrl()
+        );
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ua.aleh1s.amigoscodecourse.auth.LoginRequest;
@@ -16,6 +17,7 @@ import ua.aleh1s.amigoscodecourse.jwt.JwtUtil;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class AuthenticationIT {
 
@@ -27,6 +29,7 @@ public class AuthenticationIT {
     private WebTestClient webTestClient;
     @Autowired
     private JwtUtil jwtUtil;
+
 
     @Test
     public void canLogin() {

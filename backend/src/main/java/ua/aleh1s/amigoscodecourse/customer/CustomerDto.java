@@ -10,6 +10,7 @@ public record CustomerDto(
         Gender gender,
         List<String> roles,
         String username,
-        String profileImageId
+        String profileImageId,
+        String profileImageUrl
 ) {
 }

@@ -9,6 +9,7 @@ import AuthProvider from "./components/context/AuthContext.jsx";
 import ProtectedRoute from "./components/shared/ProtectedRoute.jsx";
 import SignUp from "./components/registration/SignUp.jsx";
 import AboutUs from "./components/aboutus/AboutUs.jsx";
+import RedirectHandler from "./components/oauth2/RedirectHandler.jsx";
 
 const {ToastContainer} = createStandaloneToast()
 const router = createBrowserRouter([
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
     {
         path: "/registration",
         element: <SignUp/>
+    },
+    {
+        path: "/oauth2/redirect",
+        element: <RedirectHandler/>
     },
     {
         path: "/dashboard",

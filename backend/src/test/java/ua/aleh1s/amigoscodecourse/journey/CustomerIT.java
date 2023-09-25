@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ua.aleh1s.amigoscodecourse.custom.CustomPageImpl;
 import ua.aleh1s.amigoscodecourse.customer.*;
@@ -25,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class CustomerIT {
 
@@ -80,8 +82,9 @@ public class CustomerIT {
                 Gender.valueOf(request.gender()),
                 List.of("ROLE_USER"),
                 request.email(),
-                null
-        );
+                null,
+                null);
+
 
         assertThat(registeredCustomer).isEqualTo(expectedCustomer);
     }
@@ -203,8 +206,8 @@ public class CustomerIT {
                 Gender.valueOf(customerUpdateRequest.gender()),
                 List.of("ROLE_USER"),
                 customerUpdateRequest.email(),
-                null
-        );
+                null,
+                null);
 
         assertThat(updatedCustomer).isEqualTo(expectedCustomer);
     }
